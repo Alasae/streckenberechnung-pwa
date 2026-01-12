@@ -1,0 +1,13 @@
+{
+  "name": "Streckenberechnung",
+  "short_name": "Strecke",
+  "description": "Berechne Zeit für verschiedene Fortbewegungsarten.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#4f8cff",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
