@@ -38,40 +38,68 @@
 
     <div class="result" id="ausgabe"></div>
 
-    <script>
-        function berechnen() {
-            let raw = document.getElementById("kilometer").value;
-            raw = raw.trim().replace(/\s/g, "").replace(/,/g, ".").replace(/[^0-9.]/g, "");
-            const km = Number(raw);
-            if (raw === "") { document.getElementById("ausgabe").innerHTML = ""; return; }
-            if (!isFinite(km) || km <= 0) {
-                document.getElementById("ausgabe").innerHTML = "<p>Bitte eine gültige Strecke eingeben.</p>";
-                return;
-            }
-            const geschwindigkeiten = {
-                "⛰️ Schwieriges Gelände zu Fuß": 2,
-                "🚶 Zu Fuß": 4,
-                "🐎 Zu Pferd": 6,
-                "🛶 Langsames Schiff": 5,
-                "⛴️ Fähre": 9,
-                "🚤 Schnelles Schiff": 18,
-                "🚁 Flugschiff": 25
-            };
-            let output = "";
-            for (const art in geschwindigkeiten) {
-                const zeit = km / geschwindigkeiten[art];
-                const stunden = Math.floor(zeit);
-                const minuten = Math.round((zeit % 1) * 60);
-                output += `<p><strong>${art}</strong>: ${stunden} h ${minuten} min</p>`;
-            }
-            document.getElementById("ausgabe").innerHTML = output;
+<script>
+function berechnen() {
+    let rawValue = document.getElementById("kilometer").value;
+
+    // iOS-Safari: alle unerwünschten Zeichen entfernen
+    rawValue = rawValue
+        .trim()
+        .replace(/\s/g, "")
+        .replace(/,/g, ".")
+        .replace(/[^0-9.]/g, "");
+
+    const km = Number(rawValue);
+
+    if (!isFinite(km) || km <= 0) {
+        document.getElementById("ausgabe").innerHTML =
+            "<p>Bitte eine gültige Strecke eingeben.</p>";
+        return;
+    }
+
+    // Geschwindigkeit in km/h
+    const geschwindigkeiten = {
+        "⛰️ Schwieriges Gelände zu Fuß": 2,
+        "🚶‍➡️ Zu Fuß / schwieriges Gelände zu Pferd": 4,
+        "🐎 Zu Pferd": 6,
+        "🛶 Langsames Schiff": 5,
+        "⛴️ Binnenschifffahrt oder Fähren": 9,
+        "🚤 Schnelle Handels- oder Kriegsschiffe": 18,
+        "🚁 Flugschiff": 25
+    };
+
+    // Tagesgrenze in Stunden: ab dieser Stundenanzahl wird 1 Tag gezählt
+    const tageInStunden = {
+        "⛰️ Schwieriges Gelände zu Fuß": 8,
+        "🚶‍➡️ Zu Fuß / schwieriges Gelände zu Pferd": 8,
+        "🐎 Zu Pferd": 8,
+        "🛶 Langsames Schiff": 24,
+        "⛴️ Binnenschifffahrt oder Fähren": 24,
+        "🚤 Schnelle Handels- oder Kriegsschiffe": 24,
+        "🚁 Flugschiff": 24
+    };
+
+    let output = "";
+
+    for (const art in geschwindigkeiten) {
+        const zeitStunden = km / geschwindigkeiten[art];
+        const stunden = Math.floor(zeitStunden);
+        const minuten = Math.round((zeitStunden - stunden) * 60);
+
+        const tagesGrenze = tageInStunden[art];
+        let tageText = "";
+
+        // Prüfen, ob Stunden die Tagesgrenze überschreiten
+        if (zeitStunden >= tagesGrenze) {
+            const tage = Math.floor(zeitStunden / tagesGrenze);
+            tageText = ` (${tage} Tag${tage > 1 ? "e" : ""})`;
         }
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js')
-                .then(() => console.log('Service Worker registriert'))
-                .catch(err => console.log('Service Worker Fehler:', err));
-        }
-    </script>
+        output += `<p><strong>${art}:</strong> ${stunden} h ${minuten} min${tageText}</p>`;
+    }
+
+    document.getElementById("ausgabe").innerHTML = output;
+}
+</script>
 </body>
 </html>
