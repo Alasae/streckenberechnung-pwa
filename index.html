@@ -98,7 +98,7 @@ function berechnen() {
 
         const minuten = Math.round((zeitStunden - Math.floor(zeitStunden)) * 60);
 
-        // Formatierte Ausgabe mit Farben
+        // Ausgabe bauen
         let tageText = "";
         if (tage > 0) {
             tageText = `<span style="color:#4f8cff;font-weight:600;">${tage} Tag${tage > 1 ? "e" : ""}</span>, `;
@@ -106,7 +106,7 @@ function berechnen() {
         const stundenText = `<span style="color:#ff8c00;font-weight:600;">${restStunden} h</span>`;
         const minutenText = `<span style="color:#00cc66;font-weight:600;">${minuten} min</span>`;
 
-        output += `<p><strong>${art}:</strong> ${tageText}${stundenText} ${minutenText}</p>`;
+        output += `<p><strong style="color:#ffffff;">${art}:</strong> ${tageText}${stundenText} ${minutenText}</p>`;
     }
 
     document.getElementById("ausgabe").innerHTML = output;
