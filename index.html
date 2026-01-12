@@ -42,7 +42,7 @@
 function berechnen() {
     let rawValue = document.getElementById("kilometer").value;
 
-    // iOS-Safari: alle unerwünschten Zeichen entfernen
+    // iOS-Safari: unerwünschte Zeichen entfernen
     rawValue = rawValue
         .trim()
         .replace(/\s/g, "")
@@ -68,7 +68,7 @@ function berechnen() {
         "🚁 Flugschiff": 25
     };
 
-    // Tagesgrenze in Stunden: ab dieser Stundenanzahl wird 1 Tag gezählt
+    // Tagesgrenze in Stunden
     const tageInStunden = {
         "⛰️ Schwieriges Gelände zu Fuß": 8,
         "🚶‍➡️ Zu Fuß / schwieriges Gelände zu Pferd": 8,
@@ -82,24 +82,36 @@ function berechnen() {
     let output = "";
 
     for (const art in geschwindigkeiten) {
-        const zeitStunden = km / geschwindigkeiten[art];
-        const stunden = Math.floor(zeitStunden);
-        const minuten = Math.round((zeitStunden - stunden) * 60);
-
         const tagesGrenze = tageInStunden[art];
-        let tageText = "";
+        const zeitStunden = km / geschwindigkeiten[art];
 
-        // Prüfen, ob Stunden die Tagesgrenze überschreiten
+        let tage = 0;
+        let restStunden = 0;
+
+        // Tage und Reststunden berechnen
         if (zeitStunden >= tagesGrenze) {
-            const tage = Math.floor(zeitStunden / tagesGrenze);
-            tageText = ` (${tage} Tag${tage > 1 ? "e" : ""})`;
+            tage = Math.floor(zeitStunden / tagesGrenze);
+            restStunden = Math.floor(zeitStunden % tagesGrenze);
+        } else {
+            restStunden = Math.floor(zeitStunden);
         }
 
-        output += `<p><strong>${art}:</strong> ${stunden} h ${minuten} min${tageText}</p>`;
+        const minuten = Math.round((zeitStunden - Math.floor(zeitStunden)) * 60);
+
+        // Formatierte Ausgabe mit Farben
+        let tageText = "";
+        if (tage > 0) {
+            tageText = `<span style="color:#4f8cff;font-weight:600;">${tage} Tag${tage > 1 ? "e" : ""}</span>, `;
+        }
+        const stundenText = `<span style="color:#ff8c00;font-weight:600;">${restStunden} h</span>`;
+        const minutenText = `<span style="color:#00cc66;font-weight:600;">${minuten} min</span>`;
+
+        output += `<p><strong>${art}:</strong> ${tageText}${stundenText} ${minutenText}</p>`;
     }
 
     document.getElementById("ausgabe").innerHTML = output;
 }
 </script>
+
 </body>
 </html>
