@@ -93,6 +93,7 @@ let slices = [];
 let angle = 0;
 let spinning = false;
 let winnerIndex = null;
+let glowPhase = 0;
 
 // Pastellfarben
 const pastelColors = [
@@ -125,13 +126,13 @@ function drawWheel() {
     ctx.fillStyle = pastelColors[i % pastelColors.length];
     ctx.fill();
 
-    // Gewinner Highlight
+    // Gewinner Glow
     if (i === winnerIndex) {
       ctx.save();
       ctx.translate(radius, radius);
       ctx.rotate(start + sliceAngle / 2);
-      ctx.strokeStyle = "white";
-      ctx.lineWidth = 5;
+      ctx.strokeStyle = `rgba(255,255,255,${0.3 + 0.3 * Math.sin(glowPhase)})`;
+      ctx.lineWidth = 6;
       ctx.beginPath();
       ctx.moveTo(0,0);
       ctx.arc(0,0,radius-5,0,sliceAngle);
@@ -180,10 +181,12 @@ function drawPointer() {
   ctx.restore();
 }
 
+// Spin Animation
 function spin() {
   if (spinning) return;
   spinning = true;
   winnerIndex = null;
+  glowPhase = 0;
   let speed = Math.random() * 0.3 + 0.3;
 
   const interval = setInterval(() => {
@@ -197,10 +200,21 @@ function spin() {
       // Gewinner berechnen
       const sliceAngle = (2 * Math.PI) / slices.length;
       winnerIndex = Math.floor(((2 * Math.PI - angle % (2 * Math.PI)) / sliceAngle)) % slices.length;
-      drawWheel(); // Highlight Gewinner
+      animateGlow(); // Glow starten
       alert("Ergebnis: " + slices[winnerIndex]);
     }
   }, 16);
+}
+
+// Glow Animation
+function animateGlow() {
+  function glowLoop() {
+    if (winnerIndex === null) return;
+    glowPhase += 0.05;
+    drawWheel();
+    requestAnimationFrame(glowLoop);
+  }
+  requestAnimationFrame(glowLoop);
 }
 
 // Initial bauen
