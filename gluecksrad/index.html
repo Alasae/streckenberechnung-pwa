@@ -94,6 +94,7 @@ let angle = 0;
 let spinning = false;
 let winnerIndex = null;
 let glowPhase = 0;
+let pointerPhase = 0; // für Wackel-Zeiger
 
 // Pastellfarben
 const pastelColors = [
@@ -106,10 +107,11 @@ function buildWheel() {
   const labels = document.getElementById("labels").value.split("\n");
   slices = labels.slice(0, count);
   winnerIndex = null; // reset
+  pointerPhase = 0;
   drawWheel();
 }
 
-// Zeichne Rad mit Glanz + optional Highlight Gewinner
+// Zeichne Rad + Glow
 function drawWheel() {
   const radius = canvas.width / 2;
   const sliceAngle = (2 * Math.PI) / slices.length;
@@ -164,13 +166,15 @@ function drawWheel() {
   drawPointer();
 }
 
-// Zeiger oben
+// Wackel-Zeiger
 function drawPointer() {
   const radius = canvas.width / 2;
   const pointerSize = 15;
+  const wobble = Math.sin(pointerPhase) * 0.15; // kleine Rotation
+
   ctx.save();
   ctx.translate(radius, radius);
-  ctx.rotate(0);
+  ctx.rotate(wobble); // leichtes Wackeln
   ctx.beginPath();
   ctx.moveTo(0, -radius - 10);
   ctx.lineTo(-pointerSize/2, -radius - 10 - pointerSize);
@@ -187,11 +191,13 @@ function spin() {
   spinning = true;
   winnerIndex = null;
   glowPhase = 0;
+  pointerPhase = 0;
   let speed = Math.random() * 0.3 + 0.3;
 
   const interval = setInterval(() => {
     angle += speed;
     speed *= 0.97;
+    pointerPhase += 0.3; // wackel Effekt während Spin
     drawWheel();
 
     if (speed < 0.002) {
@@ -201,12 +207,13 @@ function spin() {
       const sliceAngle = (2 * Math.PI) / slices.length;
       winnerIndex = Math.floor(((2 * Math.PI - angle % (2 * Math.PI)) / sliceAngle)) % slices.length;
       animateGlow(); // Glow starten
+      animatePointerWobble(); // Pointer Wackel nach Stop
       alert("Ergebnis: " + slices[winnerIndex]);
     }
   }, 16);
 }
 
-// Glow Animation
+// Glow Animation Gewinner
 function animateGlow() {
   function glowLoop() {
     if (winnerIndex === null) return;
@@ -215,6 +222,20 @@ function animateGlow() {
     requestAnimationFrame(glowLoop);
   }
   requestAnimationFrame(glowLoop);
+}
+
+// Pointer wackeln lassen nach Stop
+function animatePointerWobble() {
+  let wobblePhase = 0;
+  let wobbleSpeed = 0.05;
+  function wobbleLoop() {
+    if (winnerIndex === null) return;
+    pointerPhase = Math.sin(wobblePhase) * 0.2;
+    wobblePhase += wobbleSpeed;
+    drawWheel();
+    requestAnimationFrame(wobbleLoop);
+  }
+  requestAnimationFrame(wobbleLoop);
 }
 
 // Initial bauen
