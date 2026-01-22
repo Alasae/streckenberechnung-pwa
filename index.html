@@ -29,6 +29,11 @@
         .result { margin-top: 25px; background-color: #1e1e1e; border-radius: 10px; padding: 20px; }
         .result p { margin: 10px 0; font-size: 0.95rem; }
         .result strong { color: #4f8cff; }
+
+        .art {
+    color: #ffffff;
+    font-weight: 400; /* normal */
+}
     </style>
 </head>
 <body>
@@ -59,24 +64,24 @@ function berechnen() {
 
     // Geschwindigkeit in km/h
     const geschwindigkeiten = {
-        "⛰️ Schwieriges Gelände zu Fuß '('2 kmH')'": 2,
-        "🚶‍➡️ Zu Fuß / schwieriges Gelände zu Pferd '('4 kmH')'": 4,
-        "🐎 Zu Pferd '('6 kmH')'": 6,
-        "🛶 Langsames Schiff '('5 kmH')'": 5,
-        "⛴️ Binnenschifffahrt oder Fähren '('9 kmH')'": 9,
-        "🚤 Schnelle Handels- oder Kriegsschiffe '('18 kmH')'": 18,
-        "🚁 Flugschiff '('25 kmH')'": 25
+        "⛰️ <strong>Schwieriges Gelände zu Fuß</strong> (2 kmH)": 2,
+        "🚶‍➡️ Zu Fuß / schwieriges Gelände zu Pferd (4 kmH)": 4,
+        "🐎 Zu Pferd (6 kmH)": 6,
+        "🛶 Langsames Schiff (5 kmH)": 5,
+        "⛴️ Binnenschifffahrt oder Fähren (9 kmH)": 9,
+        "🚤 Schnelle Handels- oder Kriegsschiffe (18 kmH)": 18,
+        "🚁 Flugschiff (25 kmH)": 25
     };
 
     // Tagesgrenze in Stunden
     const tageInStunden = {
-        "⛰️ Schwieriges Gelände zu Fuß '('2 kmH')'": 8,
-        "🚶‍➡️ Zu Fuß / schwieriges Gelände zu Pferd '('4 kmH')'": 8,
-        "🐎 Zu Pferd '('6 kmH')'": 8,
-        "🛶 Langsames Schiff '('5 kmH')'": 24,
-        "⛴️ Binnenschifffahrt oder Fähren '('9 kmH')'": 24,
-        "🚤 Schnelle Handels- oder Kriegsschiffe '('18 kmH')'": 24,
-        "🚁 Flugschiff '('25 kmH')'": 24
+        "⛰️ Schwieriges Gelände zu Fuß (2 kmH)": 8,
+        "🚶‍➡️ Zu Fuß / schwieriges Gelände zu Pferd (4 kmH)": 8,
+        "🐎 Zu Pferd (6 kmH)": 8,
+        "🛶 Langsames Schiff (5 kmH)": 24,
+        "⛴️ Binnenschifffahrt oder Fähren (9 kmH)": 24,
+        "🚤 Schnelle Handels- oder Kriegsschiffe (18 kmH)": 24,
+        "🚁 Flugschiff (25 kmH)": 24
     };
 
     let output = "";
@@ -106,7 +111,7 @@ function berechnen() {
         const stundenText = `<span style="color:#ff8c00;font-weight:600;">${restStunden} h</span>`;
         const minutenText = `<span style="color:#00cc66;font-weight:600;">${minuten} min</span>`;
 
-        output += `<p><strong style="color:#ffffff;">${art}:</strong> ${tageText}${stundenText} ${minutenText}</p>`;
+        output += `<p><span class="art">${art}:</span> ${tageText}${stundenText} ${minutenText}</p>`;
     }
 
     document.getElementById("ausgabe").innerHTML = output;
