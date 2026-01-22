@@ -129,6 +129,7 @@ function buildWheel() {
   drawWheel();
 }
 
+// Funktion um das Rad zu zeichnen mit Pastell-Glanz
 function drawWheel() {
   const radius = canvas.width / 2;
   const sliceAngle = (2 * Math.PI) / slices.length;
@@ -138,18 +139,29 @@ function drawWheel() {
     const start = angle + i * sliceAngle;
     const end = start + sliceAngle;
 
+    // Segment zeichnen
     ctx.beginPath();
     ctx.moveTo(radius, radius);
     ctx.arc(radius, radius, radius, start, end);
     ctx.fillStyle = pastelColors[i % pastelColors.length];
     ctx.fill();
 
-    // Text zeichnen
+    // Glanz-Overlay (leicht transparent)
+    ctx.beginPath();
+    ctx.moveTo(radius, radius);
+    ctx.arc(radius, radius, radius, start, end);
+    const grad = ctx.createRadialGradient(radius, radius, radius*0.3, radius, radius, radius);
+    grad.addColorStop(0, 'rgba(255,255,255,0.15)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Text
     ctx.save();
     ctx.translate(radius, radius);
     ctx.rotate(start + sliceAngle / 2);
     ctx.textAlign = "right";
-    ctx.fillStyle = "#121212"; // dunkler Text für Pastell
+    ctx.fillStyle = "#121212"; // dunkler Text
     ctx.font = "bold 14px sans-serif";
     ctx.fillText(text, radius - 10, 5);
     ctx.restore();
