@@ -6,7 +6,6 @@
 <title>Glücksrad PWA</title>
 
 <style>
-  /* Dark Mode + iOS native Look */
   body {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
     background-color: #121212;
@@ -18,11 +17,7 @@
     min-height: 100vh;
   }
 
-  h1 {
-    margin-bottom: 20px;
-    font-weight: 600;
-    text-align: center;
-  }
+  h1 { margin-bottom: 20px; font-weight: 600; text-align: center; }
 
   .input-group {
     display: flex;
@@ -32,11 +27,7 @@
     margin-bottom: 15px;
   }
 
-  label {
-    margin-bottom: 6px;
-    font-size: 0.95rem;
-    color: #cccccc;
-  }
+  label { margin-bottom: 6px; font-size: 0.95rem; color: #cccccc; }
 
   input, textarea {
     padding: 12px;
@@ -49,9 +40,7 @@
     outline: none;
   }
 
-  input:focus, textarea:focus {
-    border-color: #4f8cff;
-  }
+  input:focus, textarea:focus { border-color: #4f8cff; }
 
   button {
     padding: 12px;
@@ -68,20 +57,9 @@
     align-self: center;
   }
 
-  button:active {
-    opacity: 0.8;
-  }
+  button:active { opacity: 0.8; }
 
-  canvas {
-    margin-top: 20px;
-    border-radius: 50%;
-    background-color: #1e1e1e;
-  }
-
-  #pointer {
-    font-size: 2rem;
-    margin-top: -20px;
-  }
+  canvas { margin-top: 20px; border-radius: 50%; }
 </style>
 </head>
 <body>
@@ -106,7 +84,6 @@ Preis F</textarea>
 <button onclick="buildWheel()">Rad erstellen</button>
 <button onclick="spin()">Drehen</button>
 
-<div id="pointer">🔻</div>
 <canvas id="wheel" width="300" height="300"></canvas>
 
 <script>
@@ -116,7 +93,7 @@ let slices = [];
 let angle = 0;
 let spinning = false;
 
-// Pastellfarben für die Segmente
+// Pastellfarben
 const pastelColors = [
   "#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9",
   "#BAE1FF", "#D3BAFF", "#FFC2F2", "#BFFCC6"
@@ -129,7 +106,7 @@ function buildWheel() {
   drawWheel();
 }
 
-// Funktion um das Rad zu zeichnen mit Pastell-Glanz
+// Zeichne Rad + Zeiger direkt auf Gewinner
 function drawWheel() {
   const radius = canvas.width / 2;
   const sliceAngle = (2 * Math.PI) / slices.length;
@@ -139,14 +116,14 @@ function drawWheel() {
     const start = angle + i * sliceAngle;
     const end = start + sliceAngle;
 
-    // Segment zeichnen
+    // Segment
     ctx.beginPath();
     ctx.moveTo(radius, radius);
     ctx.arc(radius, radius, radius, start, end);
     ctx.fillStyle = pastelColors[i % pastelColors.length];
     ctx.fill();
 
-    // Glanz-Overlay (leicht transparent)
+    // Glanz
     ctx.beginPath();
     ctx.moveTo(radius, radius);
     ctx.arc(radius, radius, radius, start, end);
@@ -161,11 +138,32 @@ function drawWheel() {
     ctx.translate(radius, radius);
     ctx.rotate(start + sliceAngle / 2);
     ctx.textAlign = "right";
-    ctx.fillStyle = "#121212"; // dunkler Text
+    ctx.fillStyle = "#121212";
     ctx.font = "bold 14px sans-serif";
     ctx.fillText(text, radius - 10, 5);
     ctx.restore();
   });
+
+  // Zeiger oben zeichnen
+  drawPointer();
+}
+
+// Pointer auf Gewinner-Segment (oben)
+function drawPointer() {
+  const radius = canvas.width / 2;
+  const pointerSize = 15;
+
+  ctx.save();
+  ctx.translate(radius, radius);
+  ctx.rotate(0); // zeigt immer „oben“
+  ctx.beginPath();
+  ctx.moveTo(0, -radius - 10);
+  ctx.lineTo(-pointerSize/2, -radius - 10 - pointerSize);
+  ctx.lineTo(pointerSize/2, -radius - 10 - pointerSize);
+  ctx.closePath();
+  ctx.fillStyle = "red";
+  ctx.fill();
+  ctx.restore();
 }
 
 function spin() {
@@ -177,6 +175,7 @@ function spin() {
     angle += speed;
     speed *= 0.97;
     drawWheel();
+
     if (speed < 0.002) {
       clearInterval(interval);
       spinning = false;
@@ -185,6 +184,7 @@ function spin() {
   }, 16);
 }
 
+// Berechne Gewinner anhand Winkel (oben = Zeiger)
 function showResult() {
   const sliceAngle = (2 * Math.PI) / slices.length;
   const index = Math.floor(((2 * Math.PI - angle % (2 * Math.PI)) / sliceAngle)) % slices.length;
