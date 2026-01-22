@@ -1,27 +1,113 @@
 <!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glücksrad PWA</title>
+
+<style>
+  /* Dark Mode + iOS native Look */
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    margin-bottom: 20px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    max-width: 350px;
+    margin-bottom: 15px;
+  }
+
+  label {
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+    color: #cccccc;
+  }
+
+  input, textarea {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    outline: none;
+  }
+
+  input:focus, textarea:focus {
+    border-color: #4f8cff;
+  }
+
+  button {
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background-color: #4f8cff;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 5px;
+    width: 50%;
+    max-width: 180px;
+    align-self: center;
+  }
+
+  button:active {
+    opacity: 0.8;
+  }
+
+  canvas {
+    margin-top: 20px;
+    border-radius: 50%;
+    background-color: #1e1e1e;
+  }
+
+  #pointer {
+    font-size: 2rem;
+    margin-top: -20px;
+  }
+</style>
+</head>
+<body>
+
 <h1>🎡 Glücksrad</h1>
 
+<div class="input-group">
+  <label for="count">Anzahl der Felder</label>
+  <input type="number" id="count" value="6" min="2">
+</div>
 
-<label>Anzahl der Felder</label>
-<input type="number" id="count" value="6" min="2" />
-
-
-<label>Texte (je Zeile ein Feld)</label>
-<textarea id="labels" rows="6">Preis A
+<div class="input-group">
+  <label for="labels">Texte (je Zeile ein Feld)</label>
+  <textarea id="labels" rows="6">Preis A
 Preis B
 Preis C
 Preis D
 Preis E
 Preis F</textarea>
-
+</div>
 
 <button onclick="buildWheel()">Rad erstellen</button>
 <button onclick="spin()">Drehen</button>
 
-
 <div id="pointer">🔻</div>
 <canvas id="wheel" width="300" height="300"></canvas>
-
 
 <script>
 const canvas = document.getElementById("wheel");
@@ -30,82 +116,72 @@ let slices = [];
 let angle = 0;
 let spinning = false;
 
+// Pastellfarben für die Segmente
+const pastelColors = [
+  "#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9",
+  "#BAE1FF", "#D3BAFF", "#FFC2F2", "#BFFCC6"
+];
 
 function buildWheel() {
-const count = parseInt(document.getElementById("count").value);
-const labels = document.getElementById("labels").value.split("\n");
-
-
-slices = labels.slice(0, count);
-drawWheel();
+  const count = parseInt(document.getElementById("count").value);
+  const labels = document.getElementById("labels").value.split("\n");
+  slices = labels.slice(0, count);
+  drawWheel();
 }
-
 
 function drawWheel() {
-const radius = canvas.width / 2;
-const sliceAngle = (2 * Math.PI) / slices.length;
+  const radius = canvas.width / 2;
+  const sliceAngle = (2 * Math.PI) / slices.length;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  slices.forEach((text, i) => {
+    const start = angle + i * sliceAngle;
+    const end = start + sliceAngle;
 
-ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.beginPath();
+    ctx.moveTo(radius, radius);
+    ctx.arc(radius, radius, radius, start, end);
+    ctx.fillStyle = pastelColors[i % pastelColors.length];
+    ctx.fill();
 
-
-slices.forEach((text, i) => {
-const start = angle + i * sliceAngle;
-const end = start + sliceAngle;
-
-
-ctx.beginPath();
-ctx.moveTo(radius, radius);
-ctx.arc(radius, radius, radius, start, end);
-ctx.fillStyle = `hsl(${i * 360 / slices.length}, 70%, 50%)`;
-ctx.fill();
-
-
-ctx.save();
-ctx.translate(radius, radius);
-ctx.rotate(start + sliceAngle / 2);
-ctx.textAlign = "right";
-ctx.fillStyle = "white";
-ctx.font = "14px sans-serif";
-ctx.fillText(text, radius - 10, 5);
-ctx.restore();
-});
+    // Text zeichnen
+    ctx.save();
+    ctx.translate(radius, radius);
+    ctx.rotate(start + sliceAngle / 2);
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#121212"; // dunkler Text für Pastell
+    ctx.font = "bold 14px sans-serif";
+    ctx.fillText(text, radius - 10, 5);
+    ctx.restore();
+  });
 }
-
 
 function spin() {
-if (spinning) return;
-spinning = true;
+  if (spinning) return;
+  spinning = true;
+  let speed = Math.random() * 0.3 + 0.3;
 
-
-let speed = Math.random() * 0.3 + 0.3;
-
-
-const interval = setInterval(() => {
-angle += speed;
-speed *= 0.97;
-drawWheel();
-
-
-if (speed < 0.002) {
-clearInterval(interval);
-spinning = false;
-showResult();
+  const interval = setInterval(() => {
+    angle += speed;
+    speed *= 0.97;
+    drawWheel();
+    if (speed < 0.002) {
+      clearInterval(interval);
+      spinning = false;
+      showResult();
+    }
+  }, 16);
 }
-}, 16);
-}
-
 
 function showResult() {
-const sliceAngle = (2 * Math.PI) / slices.length;
-const index = Math.floor(((2 * Math.PI - angle % (2 * Math.PI)) / sliceAngle)) % slices.length;
-alert("Ergebnis: " + slices[index]);
+  const sliceAngle = (2 * Math.PI) / slices.length;
+  const index = Math.floor(((2 * Math.PI - angle % (2 * Math.PI)) / sliceAngle)) % slices.length;
+  alert("Ergebnis: " + slices[index]);
 }
 
-
+// Initial bauen
 buildWheel();
 </script>
-
 
 </body>
 </html>
