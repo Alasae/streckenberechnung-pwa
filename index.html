@@ -64,24 +64,24 @@ function berechnen() {
 
     // Geschwindigkeit in km/h
     const geschwindigkeiten = {
-        "⛰️ <strong style="color:#ffffff;">Schwieriges Gelände zu Fuß</strong> (2 kmH)": 2,
-        "🚶‍➡️ <strong style="color:#ffffff;">Zu Fuß / schwieriges Gelände zu Pferd</strong> (4 kmH)": 4,
-        "🐎 <strong style="color:#ffffff;">Zu Pferd (6 kmH)": 6,
-        "🛶 <strong style="color:#ffffff;">Langsames Schiff (5 kmH)": 5,
-        "⛴️ <strong style="color:#ffffff;">Binnenschifffahrt oder Fähren (9 kmH)": 9,
-        "🚤 <strong style="color:#ffffff;">Schnelle Handels- oder Kriegsschiffe (18 kmH)": 18,
-        "🚁 <strong style="color:#ffffff;">Flugschiff (25 kmH)": 25
+        "⛰️ Schwieriges Gelände zu Fuß (2 kmH)": 2,
+        "🚶‍➡️ Zu Fuß / schwieriges Gelände zu Pferd (4 kmH)": 4,
+        "🐎 Zu Pferd (6 kmH)": 6,
+        "🛶 Langsames Schiff (5 kmH)": 5,
+        "⛴️ Binnenschifffahrt oder Fähren (9 kmH)": 9,
+        "🚤 Schnelle Handels- oder Kriegsschiffe (18 kmH)": 18,
+        "🚁 Flugschiff (25 kmH)": 25
     };
 
     // Tagesgrenze in Stunden
     const tageInStunden = {
-        "⛰️ <strong style="color:#ffffff;">Schwieriges Gelände zu Fuß</strong> (2 kmH)": 8,
-        "🚶‍➡️ <strong style="color:#ffffff;">Zu Fuß / schwieriges Gelände zu Pferd</strong> (4 kmH)": 8,
-        "🐎 <strong style="color:#ffffff;">Zu Pferd</strong> (6 kmH)": 8,
-        "🛶 <strong style="color:#ffffff;">Langsames Schiff</strong> (5 kmH)": 24,
-        "⛴️ <strong style="color:#ffffff;">Binnenschifffahrt oder Fähren</strong> (9 kmH)": 24,
-        "🚤 <strong style="color:#ffffff;">Schnelle Handels- oder Kriegsschiffe</strong> (18 kmH)": 24,
-        "🚁 <strong style="color:#ffffff;">Flugschiff</strong> (25 kmH)": 24
+        "⛰️ Schwieriges Gelände zu Fuß (2 kmH)": 8,
+        "🚶‍➡️ Zu Fuß / schwieriges Gelände zu Pferd (4 kmH)": 8,
+        "🐎 Zu Pferd (6 kmH)": 8,
+        "🛶 Langsames Schiff (5 kmH)": 24,
+        "⛴️ Binnenschifffahrt oder Fähren (9 kmH)": 24,
+        "🚤 Schnelle Handels- oder Kriegsschiffe (18 kmH)": 24,
+        "🚁 Flugschiff (25 kmH)": 24
     };
 
     let output = "";
@@ -111,7 +111,12 @@ function berechnen() {
         const stundenText = `<span style="color:#ff8c00;font-weight:600;">${restStunden} h</span>`;
         const minutenText = `<span style="color:#00cc66;font-weight:600;">${minuten} min</span>`;
 
-        output += `<p><span class="art">${art}:</span> ${tageText}${stundenText} ${minutenText}</p>`;
+        output += `
+       <p>
+  <span class="art">${art.split("(")[0]}</span>
+  <span class="desc">(${art.split("(")[1]}</span>:
+  ${tageText}${stundenText} ${minutenText}
+</p>`;
     }
 
     document.getElementById("ausgabe").innerHTML = output;
