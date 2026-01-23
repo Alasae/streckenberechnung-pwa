@@ -101,4 +101,150 @@ const vibrantColors = [
   "#FF6F61", // Koralle
   "#FFD93D", // Sonnengelb
   "#1ABC9C", // Türkis
-  "#9B59B6"
+  "#9B59B6", // Lila
+  "#E67E22", // Orange
+  "#FF5E9C", // Pink
+  "#2ECC71", // Grün
+  "#D91AD1"  // Magenta
+];
+
+function buildWheel() {
+  const count = parseInt(document.getElementById("count").value);
+  const labels = document.getElementById("labels").value.split("\n");
+  slices = labels.slice(0, count);
+  winnerIndex = null;
+  pointerPhase = 0;
+  drawWheel();
+}
+
+function drawWheel() {
+  const radius = canvas.width / 2;
+  const sliceAngle = (2 * Math.PI) / slices.length;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  slices.forEach((text, i) => {
+    const start = angle + i * sliceAngle;
+    const end = start + sliceAngle;
+
+    // Segment
+    ctx.beginPath();
+    ctx.moveTo(radius, radius);
+    ctx.arc(radius, radius, radius, start, end);
+    ctx.fillStyle = vibrantColors[i % vibrantColors.length];
+    ctx.fill();
+
+    // Gewinner Glow
+    if (i === winnerIndex) {
+      ctx.save();
+      ctx.translate(radius, radius);
+      ctx.rotate(start + sliceAngle / 2);
+      ctx.strokeStyle = `rgba(255,255,255,${0.3 + 0.3 * Math.sin(glowPhase)})`;
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      ctx.arc(0,0,radius-5,0,sliceAngle);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Glanz
+    ctx.beginPath();
+    ctx.moveTo(radius, radius);
+    ctx.arc(radius, radius, radius, start, end);
+    const grad = ctx.createRadialGradient(radius, radius, radius*0.3, radius, radius, radius);
+    grad.addColorStop(0, 'rgba(255,255,255,0.15)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Text
+    ctx.save();
+    ctx.translate(radius, radius);
+    ctx.rotate(start + sliceAngle / 2);
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#121212";
+    ctx.font = "bold 14px sans-serif";
+    ctx.fillText(text, radius - 10, 5);
+    ctx.restore();
+  });
+
+  drawPointer();
+}
+
+// Wackelnder Zeiger
+function drawPointer() {
+  const radius = canvas.width / 2;
+  const pointerSize = 15;
+  const wobble = Math.sin(pointerPhase) * 0.15;
+
+  ctx.save();
+  ctx.translate(radius, radius);
+  ctx.rotate(wobble);
+  ctx.beginPath();
+  ctx.moveTo(0, -radius - 10);
+  ctx.lineTo(-pointerSize/2, -radius - 10 - pointerSize);
+  ctx.lineTo(pointerSize/2, -radius - 10 - pointerSize);
+  ctx.closePath();
+  ctx.fillStyle = "red";
+  ctx.fill();
+  ctx.restore();
+}
+
+// Spin Animation
+function spin() {
+  if (spinning) return;
+  spinning = true;
+  winnerIndex = null;
+  glowPhase = 0;
+  pointerPhase = 0;
+  let speed = Math.random() * 0.3 + 0.3;
+
+  const interval = setInterval(() => {
+    angle += speed;
+    speed *= 0.97;
+    pointerPhase += 0.3;
+    drawWheel();
+
+    if (speed < 0.002) {
+      clearInterval(interval);
+      spinning = false;
+      const sliceAngle = (2 * Math.PI) / slices.length;
+      winnerIndex = Math.floor(((2 * Math.PI - angle % (2 * Math.PI)) / sliceAngle)) % slices.length;
+      animateGlow();
+      animatePointerWobble();
+      alert("Ergebnis: " + slices[winnerIndex]);
+    }
+  }, 16);
+}
+
+// Glow Animation
+function animateGlow() {
+  function glowLoop() {
+    if (winnerIndex === null) return;
+    glowPhase += 0.05;
+    drawWheel();
+    requestAnimationFrame(glowLoop);
+  }
+  requestAnimationFrame(glowLoop);
+}
+
+// Pointer Wackeln
+function animatePointerWobble() {
+  let wobblePhase = 0;
+  const wobbleSpeed = 0.05;
+  function wobbleLoop() {
+    if (winnerIndex === null) return;
+    pointerPhase = Math.sin(wobblePhase) * 0.2;
+    wobblePhase += wobbleSpeed;
+    drawWheel();
+    requestAnimationFrame(wobbleLoop);
+  }
+  requestAnimationFrame(wobbleLoop);
+}
+
+// Initial bauen
+buildWheel();
+</script>
+
+</body>
+</html>
